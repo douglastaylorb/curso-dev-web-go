@@ -2,12 +2,19 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
 func noteList(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(("Content-Type"), "text/html; charset=utf-8")
-	fmt.Fprintf(w, "<h1>Lista de Anotações</h1>")
+	t, err := template.ParseFiles("views/templates/home.html")
+
+	if err != nil {
+		http.Error(w, "Houve um erro na renderização da página", http.StatusInternalServerError)
+		return
+	}
+
+	t.Execute(w, nil)
 }
 
 func noteView(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +49,7 @@ func main() {
 	mux.HandleFunc("/note/view", noteView)
 	mux.HandleFunc("/note/create", noteCreate)
 
+	fmt.Println("Servidor rodando na porta: 5000")
 	http.ListenAndServe(":5000", mux)
 
 }
